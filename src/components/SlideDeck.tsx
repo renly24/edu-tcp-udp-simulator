@@ -14,7 +14,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import ReplayIcon from "@mui/icons-material/Replay";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { FLOWS } from "@/lib/flow";
-import { CHAPTERS, QUIZ_COLOR, SLIDES, quizLabel, type Slide } from "@/lib/model";
+import { CHAPTERS, CIRCLED, MESSAGE, QUIZ_COLOR, SLIDES, quizLabel, type Slide } from "@/lib/model";
 import FlowDiagram from "./FlowDiagram";
 import { ChoiceQuizView, FinalTest, HandshakeQuiz, SortQuiz, type TestState } from "./Quizzes";
 import RaceSimulator from "./RaceSimulator";
@@ -27,6 +27,33 @@ const chapterOf = (slide: Slide) => CHAPTERS.find((c) => c.id === slide.chapter)
 function isWide(slide: Slide) {
   const { stage } = slide;
   return (stage.kind === "diagram" && stage.scenarios.length > 1) || (stage.kind === "flow" && stage.protos.length > 1) || stage.kind === "race";
+}
+
+// ---------- 「①ネ」などの表示の読み方 ----------
+
+function MessageKey() {
+  return (
+    <Paper variant="outlined" sx={{ mt: 2, p: 1.25, bgcolor: "#fafafa" }}>
+      <Typography variant="body2" fontWeight={700} mb={0.75}>
+        📨 図の「① ネ」の見方
+      </Typography>
+      <Typography variant="body2" mb={1} sx={{ lineHeight: 1.7 }}>
+        送るデータは「{MESSAGE.join("")}」という6文字のメッセージです。1文字ずつ6つのパケットに分けて送ります。丸数字はパケットの番号（送る順番）、カタカナはそのパケットが運ぶ文字です。
+      </Typography>
+      <Box sx={{ display: "grid", gridTemplateColumns: `repeat(${MESSAGE.length}, minmax(0, 1fr))`, gap: 0.5, maxWidth: 420 }}>
+        {MESSAGE.map((ch, i) => (
+          <Box key={i} sx={{ textAlign: "center", border: "1px solid #cfd8dc", borderRadius: 1, bgcolor: "#fff", py: 0.5 }}>
+            <Typography variant="caption" color="text.secondary" display="block" sx={{ lineHeight: 1.3 }}>
+              {i + 1}番目
+            </Typography>
+            <Typography fontWeight={700} sx={{ lineHeight: 1.3 }}>
+              {CIRCLED[i]} {ch}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </Paper>
+  );
 }
 
 // ---------- 上段左の図 ----------
@@ -301,6 +328,7 @@ export default function SlideDeck() {
           })}
         </Stack>
         <StageView slide={slide} test={test} onTest={setTest} onSeek={go} />
+        {slide.messageKey && <MessageKey />}
       </CardContent>
     </Card>
   );
