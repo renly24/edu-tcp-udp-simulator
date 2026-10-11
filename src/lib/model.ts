@@ -99,6 +99,8 @@ export type Stage =
   | { kind: "intro" }
   | { kind: "header" }
   | { kind: "diagram"; scenarios: Scenario[] }
+  /** 送受信の図（教科書の図と同じ形で、1つずつ進める） */
+  | { kind: "flow"; protos: Proto[] }
   | { kind: "handshake" }
   | { kind: "stream" }
   | { kind: "race" }
@@ -197,23 +199,6 @@ const TCP_LOSS: Scenario = {
     { side: "right", t: 2.2, text: "まだ2がない\n③は保管", alert: true },
     { side: "left", t: 3.2, text: "⏰ACKが来ない\n→②を再送", alert: true },
     { side: "right", t: 4.2, text: "そろった！" },
-  ],
-  end: 5.6,
-};
-
-const UDP_LOSS: Scenario = {
-  proto: "udp",
-  caption: "UDP：②が消えたとき",
-  left: PHONE,
-  right: SERVER,
-  messages: [
-    { from: "left", t: 0, label: "① ネ", kind: "udp" },
-    { from: "left", t: 0.6, label: "② ッ", kind: "udp", lost: true },
-    { from: "left", t: 1.2, label: "③ ト", kind: "udp" },
-  ],
-  notes: [
-    { side: "left", t: 1.2, text: "送ったら\n終わり" },
-    { side: "right", t: 2.2, text: "「ネト」\nのまま", alert: true },
   ],
   end: 5.6,
 };
@@ -360,8 +345,8 @@ export const SLIDES: Slide[] = [
     chapter: 3,
     title: "届かなかった分だけ再送する",
     description:
-      "③を受け取ったサーバは「まだ2番が来ていない」ので、もう一度「ACK=2」を返します。③は捨てずに手元に保管しておきます。スマホは、一定時間たっても②の ACK が返ってこないので、②を再送します。②が届くと、サーバは「ACK=4（③まで全部そろった）」を返します。",
-    stage: { kind: "diagram", scenarios: [TCP_LOSS] },
+      "図の「1つ進める」を押して、TCP の送受信を1つずつ見ていきましょう。受信側はデータを受け取るたびに「OK!」（確認応答・ACK）を返します。送信側は、一定時間たっても OK が返ってこないデータをもう一度送ります（再送）。左右の □□□ は、送信側が送ったデータと、受信側が受け取ったデータです。",
+    stage: { kind: "flow", protos: ["tcp"] },
     points: ["ACK が来ない → 一定時間（タイムアウト）で再送", "確実に届くが、待つ分だけ時間がかかる"],
   },
   {
@@ -393,8 +378,16 @@ export const SLIDES: Slide[] = [
     chapter: 4,
     title: "UDP でパケットが消えたら",
     description:
-      "同じように②が消えても、UDP は何もしません。受け取った側は ACK を返さないので、送った側は②が消えたことに気づきません。受け取ったアプリには「ネト」と、欠けたままのデータが渡されます。そのかわり、待つ時間がないのですぐに終わります。",
-    stage: { kind: "diagram", scenarios: [TCP_LOSS, UDP_LOSS] },
+      "同じように②でエラーが起きたとき、UDP ではどうなるでしょう。図の「1つ進める」を押して見ていきましょう。UDP はパケットの受信確認（OK）をしないので、送信側は応答を待たずに次々に送ります。",
+    stage: { kind: "flow", protos: ["udp"] },
+  },
+  {
+    id: "compare-flow",
+    chapter: 4,
+    title: "TCP と UDP の送受信を比べよう",
+    description:
+      "TCP は OK を確かめながら送り、届かなかった②を再送するので、完全な形のデータが届きます。ただし図の縦の長さ（かかった時間）は長くなります。UDP は確認をしないので、完全な形で届く保証はありませんが、早く送り終わります。この速さ（リアルタイム性）を生かして、動画のライブ配信などに使われています。",
+    stage: { kind: "flow", protos: ["tcp", "udp"] },
   },
   {
     chapter: 4,
