@@ -13,7 +13,9 @@ import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import ReplayIcon from "@mui/icons-material/Replay";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { FLOWS } from "@/lib/flow";
 import { CHAPTERS, QUIZ_COLOR, SLIDES, quizLabel, type Slide } from "@/lib/model";
+import FlowDiagram from "./FlowDiagram";
 import { ChoiceQuizView, FinalTest, HandshakeQuiz, SortQuiz, type TestState } from "./Quizzes";
 import RaceSimulator from "./RaceSimulator";
 import SequenceDiagram from "./SequenceDiagram";
@@ -23,7 +25,8 @@ const chapterOf = (slide: Slide) => CHAPTERS.find((c) => c.id === slide.chapter)
 
 /** 図を横いっぱいに使うスライド（説明は図の上に出す） */
 function isWide(slide: Slide) {
-  return (slide.stage.kind === "diagram" && slide.stage.scenarios.length > 1) || slide.stage.kind === "race";
+  const { stage } = slide;
+  return (stage.kind === "diagram" && stage.scenarios.length > 1) || (stage.kind === "flow" && stage.protos.length > 1) || stage.kind === "race";
 }
 
 // ---------- 上段左の図 ----------
@@ -40,6 +43,14 @@ function StageView({ slide, test, onTest, onSeek }: { slide: Slide; test: TestSt
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: `repeat(${stage.scenarios.length}, minmax(0, 1fr))` }, gap: 2 }}>
           {stage.scenarios.map((s) => (
             <SequenceDiagram key={s.caption} scenario={s} />
+          ))}
+        </Box>
+      );
+    case "flow":
+      return (
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: `repeat(${stage.protos.length}, minmax(0, 1fr))` }, gap: 2 }}>
+          {stage.protos.map((p) => (
+            <FlowDiagram key={p} flow={FLOWS[p]} />
           ))}
         </Box>
       );

@@ -47,3 +47,23 @@ body {
     opacity: 1;
   }
 }
+
+/* 送受信の図：データが線に沿って進む */
+.seq-anim .move {
+  animation: flow-move var(--dur) ease-out var(--delay) both;
+}
+
+@keyframes flow-move {
+  from {
+    transform: translate(var(--fx), var(--fy));
+  }
+  to {
+    transform: translate(0px, 0px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seq-anim .move {
+    animation: none;
+  }
+}
