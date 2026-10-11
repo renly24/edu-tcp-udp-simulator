@@ -116,6 +116,8 @@ export interface Slide {
   stage: Stage;
   /** 説明の下に出す要点 */
   points?: string[];
+  /** 図の下に「①ネ」などの表示の読み方を出す */
+  messageKey?: boolean;
   quiz?: Quiz;
 }
 
@@ -293,9 +295,10 @@ export const SLIDES: Slide[] = [
     chapter: 2,
     title: "3ウェイハンドシェイク",
     description:
-      "TCP は、3回のやりとりでつながりを作ります。①スマホが「つながりたい（SYN）」、②サーバが「いいよ。こちらもつながりたい（SYN＋ACK）」、③スマホが「了解（ACK）」。3回握手するので 3ウェイハンドシェイクといいます。これが終わってから、やっとデータを送り始めます。",
+      "TCP は、3回のやりとりでつながりを作ります。まずスマホが「つながりたい（SYN）」、次にサーバが「いいよ。こちらもつながりたい（SYN＋ACK）」、最後にスマホが「了解（ACK）」。3回握手するので 3ウェイハンドシェイクといいます。これが終わってから、やっとデータを送り始めます。図のいちばん下の「① ネ」が、最初に送るデータです。",
     stage: { kind: "diagram", scenarios: [HANDSHAKE] },
-    points: ["SYN（シン）＝ つながりたい", "ACK（アック）＝ 受け取りました（確認応答）"],
+    points: ["SYN（シン）＝ つながりたい", "ACK（アック）＝ 受け取りました（確認応答）", "「① ネ」＝ 1番目のパケット。中身は「ネ」という1文字"],
+    messageKey: true,
   },
   {
     chapter: 2,
@@ -309,8 +312,9 @@ export const SLIDES: Slide[] = [
     chapter: 2,
     title: "UDP はいきなり送る",
     description:
-      "UDP は、つながりを作りません。相手の準備ができているかを確かめずに、いきなりデータを送り始めます。図を比べると、TCP がまだあいさつをしている間に、UDP はもうデータを4つ届けています。",
+      "UDP は、つながりを作りません。相手の準備ができているかを確かめずに、いきなりデータを送り始めます。図を比べると、TCP がまだあいさつをしている間に、UDP はもう①〜④の4つのパケット（「ネ」「ッ」「ト」「ワ」）を届けています。",
     stage: { kind: "diagram", scenarios: [HANDSHAKE, UDP_START] },
+    messageKey: true,
     points: ["TCP：コネクション型（つながりを作ってから送る）", "UDP：コネクションレス型（つながりを作らない）"],
   },
 
