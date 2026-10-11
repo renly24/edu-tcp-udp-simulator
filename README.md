@@ -37,6 +37,6 @@ npm run build  # out/ に静的ファイルを出力
 `main` ブランチにプッシュすると、GitHub Actions がビルドして次の2か所に公開します。
 
 - GitHub Pages: https://renly24.github.io/edu-tcp-udp-simulator/ （Settings → Pages で Source を「GitHub Actions」にしておく）
-- FTP サーバー: http://e.gmobb.jp/omaesensei/digital/edu-tcp-udp-simulator/ （共通ワークフロー renly24/edu-deploy-workflows を使用）
+- FTP サーバー: http://e.gmobb.jp/omaesensei/digital/edu-tcp-udp-simulator/ （`.github/workflows/deploy-ftp.yml`）
 
 FTP へのアップロードには、リポジトリの Settings → Secrets and variables → Actions に `FTP_HOST`・`FTP_USER`・`FTP_PASS` の3つを登録しておく必要があります（edu-deploy-workflows の「Sync FTP secrets to repositories」でコピーできます）。
