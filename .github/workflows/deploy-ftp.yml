@@ -1,0 +1,15 @@
+name: Deploy to FTP server
+
+# 共通ワークフロー（renly24/edu-deploy-workflows）でビルドし、FTP サーバーの
+# digital/edu-tcp-udp-simulator にアップロードする。
+# 公開 URL: http://e.gmobb.jp/omaesensei/digital/edu-tcp-udp-simulator/
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: renly24/edu-deploy-workflows/.github/workflows/ftp-deploy.yml@main
+    secrets: inherit
